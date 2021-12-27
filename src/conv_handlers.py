@@ -16,6 +16,9 @@ from .handlers import help
 from .handlers import bot_faq
 from .handlers import check_username
 from .handlers import intro
+from .handlers import greetings
+from .handlers import ask_gift
+from .handlers import get_gift
 from .states import States
 
 
@@ -49,6 +52,7 @@ conv_handler = ConversationHandler(
         # -----------------------------------------------------------
         States.MENU: [
             *necessary_handlers,
+            MessageHandler(Filters.text([text["get_gift"]]), ask_gift),
             MessageHandler(Filters.text([text["connect_admin"]]), connect_to_admin),
             MessageHandler(Filters.text([text["bot_faq"]]), bot_faq),
         ],
@@ -64,6 +68,22 @@ conv_handler = ConversationHandler(
         States.INTRO: [
             *necessary_handlers,
             MessageHandler(Filters.text, intro)
+        ],
+        States.GREETINGS: [
+            *necessary_handlers,
+            MessageHandler(Filters.text, greetings)
+        ],
+        States.ASK_GIFT: [
+            *necessary_handlers,
+            MessageHandler(Filters.text, ask_gift)
+        ],
+        States.GET_GIFT: [
+            *necessary_handlers,
+            MessageHandler(Filters.regex("^(1[0-2]|[1-9])$"), get_gift)
+        ],
+        States.GET_GIFT_APPROVE: [
+            *necessary_handlers,
+            MessageHandler(Filters.text, start)
         ],
         # -----------------------------------------------------------
         # Admin

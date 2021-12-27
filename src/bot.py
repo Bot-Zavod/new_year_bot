@@ -2,6 +2,7 @@
 import os
 import sys
 
+from datetime import time as datetime_time
 from dotenv import load_dotenv
 from loguru import logger
 from telegram import Bot
@@ -10,9 +11,11 @@ from telegram.ext import MessageHandler
 from telegram.ext import PicklePersistence
 from telegram.ext import Updater
 
+from .data import TIME_ZONE
 from .conv_handlers import conv_handler
 from .handlers import echo
 from .handlers import error_handler
+from .handlers import remind_gift
 from .set_commands import clear_bot
 from .set_commands import set_bot_commands
 
@@ -63,12 +66,17 @@ def main():
         # crone jobs
         # ==========
 
+        j = updater.job_queue
+
+        callback_time = datetime_time(hour=1, minute=6, tzinfo=TIME_ZONE)
+        j.run_daily(callback=remind_gift, time=callback_time)
+
         # message handlers
         # ================
 
         dispatcher.add_handler(conv_handler)
 
-    # dispatcher.add_error_handler(error_handler)
+    dispatcher.add_error_handler(error_handler)
 
     if ("--web-hook" in sys.argv) or ("-w" in sys.argv):
         logger.debug("-------- starting webhook --------")

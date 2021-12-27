@@ -34,3 +34,18 @@ URL_REGEX = re.compile(
 
 kiev_tz = os.getenv("TIME_ZONE", "Europe/Kiev")
 TIME_ZONE = pytz.timezone(kiev_tz)
+
+gsheets_gifts = {
+    1: "E",
+    2: "F",
+    3: "G",
+    4: "H",
+    5: "I",
+    6: "J",
+    7: "K",
+    8: "L",
+    9: "M",
+    10: "N",
+    11: "O",
+    12: "P",
+}

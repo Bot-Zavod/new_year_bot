@@ -52,6 +52,26 @@ class DBSession(_admin.Mixin, _registration.Mixin):
         return user
 
     @local_session
+    def update_last_time_gift(self, session, chat_id):
+        """ updates the last time a user got a gift """
+        user = session.query(User).get(chat_id)
+        user.last_time_gift = local_time()
+        session.commit()
+
+    @local_session
+    def check_last_time_gift(self, session, chat_id):
+        """ checks whether it has been 30 days since the last time a user got a gift """
+        user = session.query(User).get(chat_id)
+        try:
+            diff = local_time() - user.last_time_gift
+        except TypeError:
+            return True
+        if diff > timedelta(days=30):
+            return True
+        else:
+            return False
+
+    @local_session
     def add_time_registered(self, session, chat_id, time):
         """ pass """
         user = session.query(User).get(chat_id)

@@ -146,3 +146,6 @@ settings.py*
 *.log
 *.log.zip
 
+client*
+newyearbot*
+sheets*

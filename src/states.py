@@ -15,4 +15,10 @@ class States(Enum):
 
     INTRO = 4
 
-    INTRO_2 = 5
+    GREETINGS = 5
+
+    ASK_GIFT = 6
+
+    GET_GIFT = 7
+
+    GET_GIFT_APPROVE = 8
