@@ -1,11 +1,9 @@
-from datetime import date
 import pygsheets
-import re
+import os
 
 from ..data import gsheets_gifts
 
-gc = pygsheets.authorize(client_secret="client_secret_408492841241-evs06jqucilc81k2vdii5e83nq0l4d28.apps.googleusercontent.com.json")
-
+gc = pygsheets.authorize(service_account_file=os.getenv('GDRIVE_API_CREDENTIALS'))
 # Open spreadsheet and then worksheet
 sh = gc.open('Чат-бот_Подарки от Trust PR Production')
 wks = sh.sheet1
