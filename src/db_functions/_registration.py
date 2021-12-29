@@ -20,9 +20,10 @@ class Mixin:
 
         user = session.query(User).get(chat_id)
         if user:
-            if user.username != username:
-                user.username = username
-                session.commit()
+            if username:
+                if user.username != username:
+                    user.username = username
+                    session.commit()
             return user
 
         new_user = User(

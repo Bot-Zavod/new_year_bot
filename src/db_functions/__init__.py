@@ -3,6 +3,7 @@ from datetime import timedelta
 from typing import Dict
 from typing import List
 from typing import Tuple
+from sqlalchemy.orm.session import Session
 
 from . import _admin
 from . import _registration
@@ -33,11 +34,37 @@ class DBSession(_admin.Mixin, _registration.Mixin):
         return users
 
     @local_session
-    def get_all_usernames(self, session) -> List:
+    def get_all_usernames(self, session: Session) -> List:
         """ returns all usernames from db """
         usernames_list = session.query(User.username).all()
         usernames = [username[0] for username in usernames_list]
         return usernames
+
+    @local_session
+    def get_all_users_not_used_gift(self, session) -> List[User]:
+        """ pass """
+        users = session.query(User).filter(User.used_gift_this_month == False).all()
+        return users
+
+    @local_session
+    def update_used_gift_this_month_set_false(self, session, chat_id):
+        """ pass """
+        user : User = session.query(User).get(chat_id)
+        user.used_gift_this_month = False
+        session.commit()
+
+    @local_session
+    def update_used_gift_this_month_set_true(self, session, chat_id):
+        """ pass """
+        user : User = session.query(User).get(chat_id)
+        user.used_gift_this_month = True
+        session.commit()
+
+    @local_session
+    def check_used_gift_this_month(self, session, chat_id):
+        """ pass """
+        user : User = session.query(User).get(chat_id)
+        return user.used_gift_this_month
 
     @local_session
     def get_user_data(self, session, chat_id: int) -> User:
@@ -46,30 +73,19 @@ class DBSession(_admin.Mixin, _registration.Mixin):
         return user
 
     @local_session
+    def update_username(self, session, chat_id: int, username: str) -> User:
+        """ updates user username if none """
+        user = session.query(User).get(chat_id)
+        user.username = username
+        session.commit()
+        user = session.query(User).get(chat_id)
+        return user
+
+    @local_session
     def get_user_data_by_username(self, session, username: str) -> User:
         """ returns user by username """
         user = session.query(User).filter(User.username == username).first()
         return user
-
-    @local_session
-    def update_last_time_gift(self, session, chat_id):
-        """ updates the last time a user got a gift """
-        user = session.query(User).get(chat_id)
-        user.last_time_gift = local_time()
-        session.commit()
-
-    @local_session
-    def check_last_time_gift(self, session, chat_id):
-        """ checks whether it has been 30 days since the last time a user got a gift """
-        user = session.query(User).get(chat_id)
-        try:
-            diff = local_time() - user.last_time_gift
-        except TypeError:
-            return True
-        if diff > timedelta(days=30):
-            return True
-        else:
-            return False
 
     @local_session
     def add_time_registered(self, session, chat_id, time):

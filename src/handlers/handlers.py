@@ -13,7 +13,7 @@ from telegram.chat import Chat
 from telegram.ext import CallbackContext
 from telegram.ext import ConversationHandler
 
-from .gsheets import get_greeting
+from .gsheets import get_greeting, get_usernames
 from .gsheets import get_available_nums
 from .gsheets import sheets_get_gift
 from .gsheets import mark_used_gift
@@ -48,8 +48,6 @@ def start_init(update: Update, context: CallbackContext):
 
     db_session.add_user(chat=chat)
 
-    user = db_session.get_user_data(chat_id)
-
     reply_keyboard = [["🦄"]]
     markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, selective=True)
 
@@ -79,7 +77,7 @@ def intro(update: Update, context: CallbackContext):
         context.bot.send_message(
             chat_id=chat_id,
             text=text["ask_username"],
-            reply_markup=start_markup(),
+            reply_markup=ReplyKeyboardRemove(),
         )
         return States.ASK_USERNAME
     else:
@@ -93,13 +91,18 @@ def check_username(update: Update, context: CallbackContext):
 
     username = mssg.replace("@", "")
 
+    db_session.update_username(chat_id, username)
+    
+    return greetings(update, context)
+
 
 def greetings(update: Update, context: CallbackContext):
     """ greets a user individually """
     chat_id = update.message.chat.id
     user = db_session.get_user_data(chat_id)
+    username = user.username
     
-    greeting = get_greeting(user.username)
+    greeting = get_greeting(username)
 
     reply_keyboard = [
         ["А я всё лично скажу"],
@@ -117,26 +120,42 @@ def greetings(update: Update, context: CallbackContext):
         context.bot.send_message(
             chat_id=chat_id,
             text="Извините, но Вы не в списке(",
-            reply_markup=markup,
+            reply_markup=ReplyKeyboardRemove(),
         )
-        return stop(update, context)
+        return start(update, context)
     return States.ASK_GIFT
 
 
 def ask_gift(update: Update, context: CallbackContext):
     """ pass """
     chat_id = update.message.chat.id
-    username = update.message.chat.username
+    user = db_session.get_user_data(chat_id)
+    username = user.username
+
+    if username not in get_usernames():
+        context.bot.send_message(
+            chat_id=chat_id,
+            text="Извините, но Вы не в списке(\nЕсли считаете, что возникла ошибка, напишите сюда ➡ @khmellevskyi",
+            reply_markup=ReplyKeyboardRemove(),
+        )
+        return start(update, context)
 
     available_nums = get_available_nums(username)
+    if available_nums == []:
+        context.bot.send_message(
+            chat_id=chat_id,
+            text=f"Вы уже использовали все свои подарки 😊",
+            reply_markup=ReplyKeyboardRemove(),
+        )
+        return start(update, context)
     av_nums_text = "Доступные числа: "
     for ii in range(len(available_nums)):
         av_nums_text += str(available_nums[ii])
         if ii != len(available_nums)-1:
             av_nums_text += ", "
 
-    is_more_30_days = db_session.check_last_time_gift(chat_id)
-    if is_more_30_days == True:
+    used_gift_this_month = db_session.check_used_gift_this_month(chat_id)
+    if used_gift_this_month == False:
         context.bot.send_message(
             chat_id=chat_id,
             text=f"А теперь — любая цифра от 1 до 12! Что же там?\n{av_nums_text}",
@@ -146,19 +165,18 @@ def ask_gift(update: Update, context: CallbackContext):
     else:
         context.bot.send_message(
             chat_id=chat_id,
-            text=f"Вы уже получали подарок за последние 30 дней)",
+            text=f"Вы уже получали подарок в этом месяце)",
         )
         return start(update, context)
 
 def get_gift(update: Update, context: CallbackContext):
     """ pass """
     chat_id = update.message.chat.id
-    username = update.message.chat.username
-    mssg = update.message.text
     user = db_session.get_user_data(chat_id)
+    username = user.username
+    mssg = update.message.text
 
     available_nums = get_available_nums(username)
-    print(available_nums)
     if int(mssg) in available_nums:
         context.bot.send_message(
             chat_id=chat_id,
@@ -167,7 +185,7 @@ def get_gift(update: Update, context: CallbackContext):
         )
         gift = sheets_get_gift(username, int(mssg))
         mark_used_gift(username, int(mssg))
-        db_session.update_last_time_gift(chat_id)
+        db_session.update_used_gift_this_month_set_true(chat_id)
 
         reply_keyboard = [["Кайф, жду новостей!"]]
         markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, selective=True)
@@ -202,7 +220,10 @@ def start(update: Update, context: CallbackContext):
     """ start command an msg """
     logger.info("main menu")
 
-    chat_id = update.message.chat.id
+    chat = update.message.chat
+    chat_id = chat.id
+
+    db_session.add_user(chat=chat)
 
     reply_keyboard = [
         [text["get_gift"]],
@@ -233,28 +254,49 @@ def stop(update: Update, context: CallbackContext):
         reply_markup=start_markup(),
         disable_web_page_preview=True,
     )
-    db_session.ban_user(chat_id)
+    # db_session.ban_user(chat_id)
     return ConversationHandler.END
 
-def remind_gift(context: CallbackContext):
 
+def remind_gift(context: CallbackContext):
+    """ pass """
+    users = db_session.get_all_users_not_used_gift()
+    for user in users:
+        chat_id = user.chat_id
+        reply_keyboard = [
+            [text["get_gift"]],
+            [text["bot_faq"]],
+            [text["connect_admin"]]
+        ]
+        markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, selective=True)
+        context.bot.send_message(
+            chat_id=chat_id,
+            text="Месяц скоро заканчивается, а Вы все еще не получили свой подарок 😊",
+            reply_markup=markup,
+        )
+        return States.MENU
+
+
+def update_new_month(context: CallbackContext):
+    """ pass """
     users = db_session.get_all_users()
     for user in users:
         chat_id = user.chat_id
-        is_more_30_days = db_session.check_last_time_gift(chat_id)
-        if is_more_30_days == True:
-            reply_keyboard = [
-                [text["get_gift"]],
-                [text["bot_faq"]],
-                [text["connect_admin"]]
-            ]
-            markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, selective=True)
-            context.bot.send_message(
-                chat_id=chat_id,
-                text="🎉 Уже прошел месяц и Вы можете снова получить подарок!",
-                reply_markup=markup,
-            )
-            return States.MENU
+
+        db_session.update_used_gift_this_month_set_false(chat_id)
+
+        reply_keyboard = [
+            [text["get_gift"]],
+            [text["bot_faq"]],
+            [text["connect_admin"]]
+        ]
+        markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, selective=True)
+        context.bot.send_message(
+            chat_id=chat_id,
+            text="🎉 Новый месяц - новые подарки!",
+            reply_markup=markup,
+        )
+        return States.MENU
 
 
 def connect_to_admin(update: Update, context: CallbackContext):

@@ -13,6 +13,7 @@ from sqlalchemy import MetaData
 from sqlalchemy import String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.sqltypes import Boolean
 
 meta = MetaData(  # automatically name constraints to simplify migrations
     naming_convention={
@@ -42,7 +43,7 @@ class User(Base):
     chat_id = Column(BigInteger, primary_key=True)
     username = Column(String(35))  # Telegram allows username no longer then 32
     full_name = Column(String)  # full name is unlimited
-    last_time_gift = Column(DateTime(timezone=True))
+    used_gift_this_month = Column(Boolean)
     time_registered = Column(DateTime(timezone=True), default=local_time)
 
     def __repr__(self):

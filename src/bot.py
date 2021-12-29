@@ -16,6 +16,7 @@ from .conv_handlers import conv_handler
 from .handlers import echo
 from .handlers import error_handler
 from .handlers import remind_gift
+from .handlers import update_new_month
 from .set_commands import clear_bot
 from .set_commands import set_bot_commands
 
@@ -68,8 +69,11 @@ def main():
 
         j = updater.job_queue
 
-        callback_time = datetime_time(hour=1, minute=6, tzinfo=TIME_ZONE)
-        j.run_daily(callback=remind_gift, time=callback_time)
+        callback_time = datetime_time(hour=6, minute=55, tzinfo=TIME_ZONE)
+        # j.run_daily(callback=remind_gift, time=callback_time)
+        j.run_monthly(callback=remind_gift, when=callback_time, day=29)
+
+        j.run_monthly(callback=update_new_month, when=callback_time, day=1)
 
         # message handlers
         # ================

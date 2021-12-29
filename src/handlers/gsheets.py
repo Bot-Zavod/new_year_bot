@@ -40,6 +40,7 @@ def get_greeting(username):
     else:
         return None
 
+
 def get_available_nums(username):
     cell_list = wks.range('C2:C54')
 
@@ -50,12 +51,16 @@ def get_available_nums(username):
             if username == cell.value.replace("@", ""):
                 row = cell.row
 
-    available_nums = []
-    cell_list = wks.range(f'E{row}:P{row}')
-    for cell in cell_list[0]:
-        if cell.color == (None, None, None, None) and cell.value != '':
-            available_nums.append(cell.col-4)
-    return available_nums
+    if row != None:
+        available_nums = []
+        cell_list = wks.range(f'E{row}:P{row}')
+        for cell in cell_list[0]:
+            if cell.color == (None, None, None, None) and cell.value != '':
+                available_nums.append(cell.col-4)
+        return available_nums
+    else:
+        return None
+
 
 def sheets_get_gift(username, num):
     cell_list = wks.range('C2:C54')
@@ -67,6 +72,7 @@ def sheets_get_gift(username, num):
 
     gift = wks.cell(f"{gsheets_gifts[num]}{row}")
     return gift.value
+
 
 def mark_used_gift(username, num):
     cell_list = wks.range('C2:C54')
@@ -80,42 +86,3 @@ def mark_used_gift(username, num):
     gift.color = (1, 1, 0, 0)
     gift.update()
     return None
-
-
-
-
-
-        # if cell.value == str("@"+username):
-        #     row = cell.row
-        #     break
-
-    # cell_list = wks.range('B1:Z1')[0]
-    # print(cell_list)
-    # for cell in cell_list:
-    #     is_found = False
-    #     print(cell.value)
-    #     if cell.value == date.today().isoformat():
-    #         column = "".join(re.findall("[a-zA-Z]+", cell.label))
-    #         is_found = True
-    #         break
-    # if is_found is False:
-    #     update_date()
-    #     write_to_sheets(username, num)
-
-    # header = wks.cell(f"{column}{row}")
-    # header.value = num
-    # header.update()
-
-
-# def update_date(*args):
-#     cell_list = wks.range('B1:Z1')[0]
-#     print(cell_list)
-#     for cell in cell_list:
-#         print(cell.value)
-#         if cell.value == date.today().isoformat():
-#             break
-#         elif cell.value == '':
-#             cell.value = date.today().isoformat()
-#             cell.update()
-#             break
-        
