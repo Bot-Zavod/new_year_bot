@@ -43,7 +43,7 @@ class User(Base):
     chat_id = Column(BigInteger, primary_key=True)
     username = Column(String(35))  # Telegram allows username no longer then 32
     full_name = Column(String)  # full name is unlimited
-    used_gift_this_month = Column(Boolean)
+    used_gift_this_month = Column(Boolean, default=False, nullable=False)
     time_registered = Column(DateTime(timezone=True), default=local_time)
 
     def __repr__(self):

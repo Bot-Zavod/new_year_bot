@@ -30,6 +30,7 @@ class Mixin:
             chat_id=chat_id,
             username=username,
             full_name=first_name,
+            used_gift_this_month=False,
             time_registered=local_time()
         )
         session.add(new_user)
