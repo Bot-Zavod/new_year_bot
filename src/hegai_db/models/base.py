@@ -1,5 +1,5 @@
 """ db base file"""
-from .db_models import Base
+# from .db_models import Base
 import sys
 from os import getenv
 from os import path
@@ -73,4 +73,4 @@ testdb()
 # echo_value = "-db" in sys.argv
 # print("-" * 6, "SQLalchemy logging is " + str(echo_value), "-" * 6, "\n")
 
-Base.metadata.create_all(postgres_engine)
+# Base.metadata.create_all(postgres_engine)
