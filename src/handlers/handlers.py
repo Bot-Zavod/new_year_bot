@@ -132,7 +132,7 @@ def ask_gift(update: Update, context: CallbackContext):
     user = db_session.get_user_data(chat_id)
     username = user.username
 
-    if username not in get_usernames():
+    if username.lower() not in get_usernames():
         context.bot.send_message(
             chat_id=chat_id,
             text="Извините, но Вы не в списке(\nЕсли считаете, что возникла ошибка, напишите сюда ➡ @khmellevskyi",

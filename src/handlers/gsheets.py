@@ -14,7 +14,7 @@ def get_usernames():
     for cell in cell_list:
         cell = cell[0]
         try:
-            username = cell.value.replace("@", "")
+            username = cell.value.replace("@", "").lower()
         except AttributeError:
             username = cell.value
         usernames.append(username)
@@ -28,7 +28,7 @@ def get_greeting(username):
     for cell in cell_list:
         cell = cell[0]
         if username != None:
-            if username == cell.value.replace("@", ""):
+            if username.lower() == cell.value.replace("@", "").lower():
                 row = cell.row
 
     if row != None:
@@ -46,7 +46,7 @@ def get_available_nums(username):
     for cell in cell_list:
         cell = cell[0]
         if username != None:
-            if username == cell.value.replace("@", ""):
+            if username.lower() == cell.value.replace("@", "").lower():
                 row = cell.row
 
     if row != None:
@@ -65,7 +65,7 @@ def sheets_get_gift(username, num):
 
     for cell in cell_list:
         cell = cell[0]
-        if username == cell.value.replace("@", ""):
+        if username.lower() == cell.value.replace("@", "").lower():
             row = cell.row
 
     gift = wks.cell(f"{gsheets_gifts[num]}{row}")
@@ -77,7 +77,7 @@ def mark_used_gift(username, num):
 
     for cell in cell_list:
         cell = cell[0]
-        if username == cell.value.replace("@", ""):
+        if username.lower() == cell.value.replace("@", "").lower():
             row = cell.row
 
     gift = wks.cell(f"{gsheets_gifts[num]}{row}")
