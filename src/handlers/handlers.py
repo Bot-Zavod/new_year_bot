@@ -187,7 +187,9 @@ def get_gift(update: Update, context: CallbackContext):
         mark_used_gift(username, int(mssg))
         db_session.update_used_gift_this_month_set_true(chat_id)
 
+        print(ADMIN_IDS)
         for admin in ADMIN_IDS:
+            print(admin)
             context.bot.send_message(
                 chat_id=admin,
                 text=f"Пользователь {user.full_name} с юзернеймом @{user.username} получил такой подарок под номером {mssg}:\n{gift}",

@@ -9,7 +9,7 @@ sh = gc.open('Чат-бот_Подарки от Trust PR Production')
 wks = sh.sheet1
 
 def get_usernames():
-    cell_list = wks.range('C2:C54')
+    cell_list = wks.range('C2:C46')
     usernames = []
     for cell in cell_list:
         cell = cell[0]
@@ -22,7 +22,7 @@ def get_usernames():
 
 
 def get_greeting(username):
-    cell_list = wks.range('C2:C54')
+    cell_list = wks.range('C2:C46')
 
     row = None
     for cell in cell_list:
@@ -40,7 +40,7 @@ def get_greeting(username):
 
 
 def get_available_nums(username):
-    cell_list = wks.range('C2:C54')
+    cell_list = wks.range('C2:C46')
 
     row = None
     for cell in cell_list:
@@ -61,7 +61,7 @@ def get_available_nums(username):
 
 
 def sheets_get_gift(username, num):
-    cell_list = wks.range('C2:C54')
+    cell_list = wks.range('C2:C46')
 
     for cell in cell_list:
         cell = cell[0]
@@ -73,7 +73,7 @@ def sheets_get_gift(username, num):
 
 
 def mark_used_gift(username, num):
-    cell_list = wks.range('C2:C54')
+    cell_list = wks.range('C2:C46')
 
     for cell in cell_list:
         cell = cell[0]
