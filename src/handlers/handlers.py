@@ -187,6 +187,13 @@ def get_gift(update: Update, context: CallbackContext):
         mark_used_gift(username, int(mssg))
         db_session.update_used_gift_this_month_set_true(chat_id)
 
+        for admin in ADMIN_IDS:
+            context.bot.send_message(
+                chat_id=admin,
+                text=f"Пользователь {user.full_name} с юзернеймом @{user.username} получил такой подарок под номером {mssg}:\n{gift}",
+                reply_markup=ReplyKeyboardRemove(),
+            )
+
         reply_keyboard = [["Кайф, жду новостей!"]]
         markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, selective=True)
         context.bot.send_message(
@@ -194,13 +201,6 @@ def get_gift(update: Update, context: CallbackContext):
             text=f"Поздравляем🎉\nВаш подарок:\n{gift}",
             reply_markup=markup,
         )
-
-        for admin in ADMIN_IDS:
-            context.bot.send_message(
-                chat_id=admin,
-                text=f"Пользователь {user.full_name} с юзернеймом @{user.username} получил такой подарок под номером {mssg}:\n{gift}",
-                reply_markup=markup,
-            )
         return States.GET_GIFT_APPROVE
     else:
         av_nums_text = "Доступные числа: "
