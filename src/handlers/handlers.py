@@ -165,7 +165,7 @@ def ask_gift(update: Update, context: CallbackContext):
     else:
         context.bot.send_message(
             chat_id=chat_id,
-            text=f"Вы уже получали подарок в этом месяце)",
+            text=f"Следующий подарок будет готов уже 1 числа следующего месяца! Остаёмся на связи, Trust PR Production ",
         )
         return start(update, context)
 
@@ -327,10 +327,7 @@ def bot_faq(update: Update, context: CallbackContext):
     """ sends a user the instructions how to use the bot """
     logger.info("bot faq command")
 
-    text_instructions = (
-        "В этом боте вы можете получить подарок раз в месяц от PR Trust\n\n"
-        "Нажмите 'получить подарок' ⬇"
-    )
+    text_instructions = "Это — ваш персональный адвент-календарь на 2022 год от Trust PR Production"
 
     chat_id = update.message.chat.id
     context.bot.send_message(chat_id=chat_id, text=text_instructions)

@@ -73,7 +73,7 @@ def main():
         # j.run_daily(callback=remind_gift, time=callback_time)
         j.run_monthly(callback=remind_gift, when=callback_time, day=29)
 
-        # j.run_monthly(callback=update_new_month, when=callback_time, day=1)
+        j.run_monthly(callback=update_new_month, when=callback_time, day=1)
 
         # message handlers
         # ================
