@@ -273,11 +273,14 @@ def remind_gift(context: CallbackContext):
             [text["connect_admin"]]
         ]
         markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, selective=True)
-        context.bot.send_message(
-            chat_id=chat_id,
-            text="Месяц скоро заканчивается, а Вы все еще не получили свой подарок 😊",
-            reply_markup=markup,
-        )
+        try:
+            context.bot.send_message(
+                chat_id=chat_id,
+                text="Месяц скоро заканчивается, а Вы все еще не получили свой подарок 😊",
+                reply_markup=markup,
+            )
+        except Exception as e:
+            logger.error(f"Error while reminding about a gift: {e}")
 
 
 def update_new_month(context: CallbackContext):
@@ -295,11 +298,14 @@ def update_new_month(context: CallbackContext):
             [text["connect_admin"]]
         ]
         markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, selective=True)
-        context.bot.send_message(
-            chat_id=chat_id,
-            text="🎉 Новый месяц - новые подарки!",
-            reply_markup=markup,
-        )
+        try:
+            context.bot.send_message(
+                chat_id=chat_id,
+                text="🎉 Новый месяц - новые подарки!",
+                reply_markup=markup,
+            )
+        except Exception as e:
+            logger.error(f"Error while updating new month: {e}")
 
 
 def connect_to_admin(update: Update, context: CallbackContext):
