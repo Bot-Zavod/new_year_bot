@@ -169,6 +169,7 @@ def ask_gift(update: Update, context: CallbackContext):
         )
         return start(update, context)
 
+
 def get_gift(update: Update, context: CallbackContext):
     """ pass """
     chat_id = update.message.chat.id
@@ -262,6 +263,7 @@ def stop(update: Update, context: CallbackContext):
 
 def remind_gift(context: CallbackContext):
     """ pass """
+    logger.info("gift reminder")
     users = db_session.get_all_users_not_used_gift()
     for user in users:
         chat_id = user.chat_id
@@ -276,11 +278,11 @@ def remind_gift(context: CallbackContext):
             text="Месяц скоро заканчивается, а Вы все еще не получили свой подарок 😊",
             reply_markup=markup,
         )
-        return States.MENU
 
 
 def update_new_month(context: CallbackContext):
     """ pass """
+    logger.info("new month updater")
     users = db_session.get_all_users()
     for user in users:
         chat_id = user.chat_id
@@ -298,7 +300,6 @@ def update_new_month(context: CallbackContext):
             text="🎉 Новый месяц - новые подарки!",
             reply_markup=markup,
         )
-        return States.MENU
 
 
 def connect_to_admin(update: Update, context: CallbackContext):

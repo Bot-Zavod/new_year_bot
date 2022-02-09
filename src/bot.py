@@ -69,11 +69,11 @@ def main():
 
         j = updater.job_queue
 
-        callback_time = datetime_time(hour=6, minute=55, tzinfo=TIME_ZONE)
+        callback_time = datetime_time(hour=17, minute=35, tzinfo=TIME_ZONE)
         # j.run_daily(callback=remind_gift, time=callback_time)
-        j.run_monthly(callback=remind_gift, when=callback_time, day=29)
+        j.run_monthly(callback=remind_gift, when=callback_time, day=28)
 
-        j.run_monthly(callback=update_new_month, when=callback_time, day=1)
+        j.run_monthly(callback=update_new_month, when=callback_time, day=9)
 
         # message handlers
         # ================

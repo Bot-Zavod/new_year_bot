@@ -40,6 +40,9 @@ necessary_handlers = [
     CommandHandler("start", start_init, pass_job_queue=True),
     CommandHandler("help", help),
     admin_handler,
+    MessageHandler(Filters.text([text["get_gift"]]), ask_gift),
+    MessageHandler(Filters.text([text["connect_admin"]]), connect_to_admin),
+    MessageHandler(Filters.text([text["bot_faq"]]), bot_faq),
 ]
 
 conv_handler = ConversationHandler(
